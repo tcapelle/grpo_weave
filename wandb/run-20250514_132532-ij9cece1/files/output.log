@@ -1,0 +1,66 @@
+weave version 0.51.46 is available!  To upgrade, please run:
+ $ pip install weave --upgrade
+Logged in as Weights & Biases user: capecape.
+View Weave data at https://wandb.ai/capecape/grpo_weave/weave
+Traceback (most recent call last):
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 409, in hf_raise_for_status
+    response.raise_for_status()
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/requests/models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/api/repos/create
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/triton_eval/grpo_weave/train.py", line 80, in <module>
+    main(script_args, training_args)
+  File "/root/triton_eval/grpo_weave/train.py", line 45, in main
+    trainer = GRPOTrainer(
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/trl/trainer/grpo_trainer.py", line 565, in __init__
+    super().__init__(
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/transformers/utils/deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/transformers/trainer.py", line 690, in __init__
+    self.init_hf_repo()
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/transformers/trainer.py", line 4624, in init_hf_repo
+    repo_url = create_repo(repo_name, token=token, private=self.args.hub_private_repo, exist_ok=True)
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/hf_api.py", line 3718, in create_repo
+    hf_raise_for_status(r)
+  File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 482, in hf_raise_for_status
+    raise _format(HfHubHTTPError, str(e), response) from e
+huggingface_hub.errors.HfHubHTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/api/repos/create (Request ID: Root=1-682499d2-2a3cf2fb3cd4e88b5e344996;0a404862-617c-4113-80db-e975193bfc71)
+
+Invalid username or password.
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 409, in hf_raise_for_status
+[rank0]:     response.raise_for_status()
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/requests/models.py", line 1024, in raise_for_status
+[rank0]:     raise HTTPError(http_error_msg, response=self)
+[rank0]: requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/api/repos/create
+
+[rank0]: The above exception was the direct cause of the following exception:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/triton_eval/grpo_weave/train.py", line 80, in <module>
+[rank0]:     main(script_args, training_args)
+[rank0]:   File "/root/triton_eval/grpo_weave/train.py", line 45, in main
+[rank0]:     trainer = GRPOTrainer(
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/trl/trainer/grpo_trainer.py", line 565, in __init__
+[rank0]:     super().__init__(
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/transformers/utils/deprecation.py", line 172, in wrapped_func
+[rank0]:     return func(*args, **kwargs)
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/transformers/trainer.py", line 690, in __init__
+[rank0]:     self.init_hf_repo()
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/transformers/trainer.py", line 4624, in init_hf_repo
+[rank0]:     repo_url = create_repo(repo_name, token=token, private=self.args.hub_private_repo, exist_ok=True)
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank0]:     return fn(*args, **kwargs)
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/hf_api.py", line 3718, in create_repo
+[rank0]:     hf_raise_for_status(r)
+[rank0]:   File "/root/triton_eval/.venv/lib/python3.10/site-packages/huggingface_hub/utils/_http.py", line 482, in hf_raise_for_status
+[rank0]:     raise _format(HfHubHTTPError, str(e), response) from e
+[rank0]: huggingface_hub.errors.HfHubHTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/api/repos/create (Request ID: Root=1-682499d2-2a3cf2fb3cd4e88b5e344996;0a404862-617c-4113-80db-e975193bfc71)
+
+[rank0]: Invalid username or password.

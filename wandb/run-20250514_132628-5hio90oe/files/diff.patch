@@ -1,0 +1,143 @@
+diff --git a/README.md b/README.md
+index 996a3ba..406abf8 100644
+--- a/README.md
++++ b/README.md
+@@ -7,4 +7,8 @@ Use something like tmux if you want to run on a single machine to ensure the ter
+ 
+ ```
+ CUDA_VISIBLE_DEVICES=0,1,2,3 trl vllm-serve --tensor-parallel-size 4 --model Qwen/Qwen3-4B
++```
++
++```
++CUDA_VISIBLE_DEVICES=4,5,6,7 accelerate launch train.py --config simple_config.yaml
+ ```
+\ No newline at end of file
+diff --git a/__pycache__/config.cpython-310.pyc b/__pycache__/config.cpython-310.pyc
+index 6124fe1..eeae567 100644
+Binary files a/__pycache__/config.cpython-310.pyc and b/__pycache__/config.cpython-310.pyc differ
+diff --git a/config.py b/config.py
+index e12825d..69ea335 100644
+--- a/config.py
++++ b/config.py
+@@ -1,8 +1,10 @@
+ from dataclasses import dataclass, field
+-
++from typing import Optional
+ import trl
+ 
+ @dataclass
+ class GRPOScriptArguments(trl.ScriptArguments):
+     dataset_name: str = "gsm8k_dataset_prepared"
+-    model_name: str = "Qwen/Qwen3-4B"
+\ No newline at end of file
++    model_name: str = "Qwen/Qwen3-4B"
++    wandb_project: str = "grpo_weave"
++    wandb_entity: Optional[str] = None
+\ No newline at end of file
+diff --git a/simple_config.yaml b/simple_config.yaml
+index e9018d7..a2f2e8f 100644
+--- a/simple_config.yaml
++++ b/simple_config.yaml
+@@ -1,6 +1,8 @@
++# Script arguments
+ model_name: Qwen/Qwen3-4B
+-
+ dataset_name: gsm8k_dataset_prepared
++wandb_project: grpo_weave
++wandb_entity: 
+ 
+ # GRPO trainer config
+ bf16: true
+@@ -26,7 +28,7 @@ num_train_epochs: 1
+ output_dir: data/Qwen3-4B-Simple-RL
+ overwrite_output_dir: true
+ per_device_train_batch_size: 16
+-push_to_hub: true
++push_to_hub: false
+ report_to:
+ - wandb
+ # reward_funcs:
+diff --git a/train_grpo.py b/train_grpo.py
+deleted file mode 100644
+index 30c09bd..0000000
+--- a/train_grpo.py
++++ /dev/null
+@@ -1,77 +0,0 @@
+-import trl
+-from accelerate import Accelerator
+-from datasets import load_from_disk
+-from transformers import set_seed, AutoTokenizer, AutoModelForCausalLM
+-from trl import GRPOConfig, TrlParser
+-
+-import simple_parsing as sp
+-
+-from config import GRPOScriptArguments
+-from rewards import reward_correct, reward_format
+-
+-def main(script_args, training_args):
+-    # Set seed for reproducibility
+-    set_seed(training_args.seed)
+-
+-    # create an explicit accelerator
+-    accelerator = Accelerator()
+-
+-    # Load the dataset
+-    dataset = load_from_disk(script_args.dataset_name)
+-
+-    # Load tokenizer
+-    tokenizer = AutoTokenizer.from_pretrained(script_args.model_name)
+-
+-    # Load model
+-    model = AutoModelForCausalLM.from_pretrained(
+-        script_args.model_name,
+-        torch_dtype=torch.bfloat16,
+-        attn_implementation="flash_attention_2"
+-    )
+-    # pass our reward functions
+-    reward_funcs = [reward_correct, reward_format]
+-
+-    if accelerator.is_main_process:
+-        wandb.init(
+-            project=script_args.wandb_project, 
+-            entity=script_args.wandb_entity)
+-
+-        weave.init(script_args.wandb_project)
+-
+-    # Trainer
+-    trainer = GRPOTrainer(
+-        model=model,
+-        reward_funcs=reward_funcs,
+-        args=training_args,
+-        train_dataset=dataset[script_args.dataset_train_split],
+-        processing_class=tokenizer,
+-    )
+-    train_result = trainer.train()
+-
+-    ##################################
+-    logger.info("*** Save model ***")
+-    trainer.save_model(training_args.output_dir)
+-    logger.info(f"Model saved to {training_args.output_dir}")
+-
+-    # Save everything else on main process
+-    kwargs = {
+-        "dataset_name": script_args.dataset_name,
+-        "tags": ["grpo_weave"],
+-    }
+-    if trainer.accelerator.is_main_process:
+-        trainer.create_model_card(**kwargs)
+-        # Restore k,v cache for fast inference
+-        trainer.model.config.use_cache = True
+-        trainer.model.config.save_pretrained(training_args.output_dir)
+-
+-
+-    # push to hub
+-    if training_args.push_to_hub:
+-        logger.info("Pushing to hub...")
+-        trainer.push_to_hub(**kwargs)
+-
+-
+-if __name__ == "__main__":
+-    parser = TrlParser((GRPOScriptArguments, GRPOConfig))
+-    script_args, training_args = parser.parse_args_and_config()
+-    main(script_args, training_args)
+\ No newline at end of file

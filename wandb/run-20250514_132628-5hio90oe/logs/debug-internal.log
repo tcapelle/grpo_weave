@@ -1,0 +1,7 @@
+{"time":"2025-05-14T13:26:28.557704336Z","level":"INFO","msg":"stream: starting","core version":"0.19.9","symlink path":"/root/triton_eval/grpo_weave/wandb/run-20250514_132628-5hio90oe/logs/debug-core.log"}
+{"time":"2025-05-14T13:26:28.827400839Z","level":"INFO","msg":"created new stream","id":"5hio90oe"}
+{"time":"2025-05-14T13:26:28.827448839Z","level":"INFO","msg":"stream: started","id":"5hio90oe"}
+{"time":"2025-05-14T13:26:28.827502611Z","level":"INFO","msg":"writer: Do: started","stream_id":"5hio90oe"}
+{"time":"2025-05-14T13:26:28.827517905Z","level":"INFO","msg":"sender: started","stream_id":"5hio90oe"}
+{"time":"2025-05-14T13:26:28.827514342Z","level":"INFO","msg":"handler: started","stream_id":"5hio90oe"}
+{"time":"2025-05-14T13:26:29.001695449Z","level":"INFO","msg":"Starting system monitor"}

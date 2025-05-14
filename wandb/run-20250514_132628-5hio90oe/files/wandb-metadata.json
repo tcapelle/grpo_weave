@@ -1,0 +1,88 @@
+{
+  "os": "Linux-6.5.13-65-650-4141-22041-coreweave-amd64-85c45edc-x86_64-with-glibc2.35",
+  "python": "CPython 3.10.12",
+  "startedAt": "2025-05-14T13:26:28.556713Z",
+  "args": [
+    "--config",
+    "simple_config.yaml"
+  ],
+  "program": "/root/triton_eval/grpo_weave/train.py",
+  "codePath": "train.py",
+  "git": {
+    "remote": "https://github.com/tcapelle/grpo_weave.git",
+    "commit": "3681939327bee20a318d5cffe179d65a7bcfcf39"
+  },
+  "email": "tcapelle@wandb.com",
+  "root": "/root/triton_eval/grpo_weave",
+  "host": "devpod-2-0",
+  "executable": "/root/triton_eval/.venv/bin/python",
+  "codePathLocal": "train.py",
+  "cpu_count": 64,
+  "cpu_count_logical": 128,
+  "gpu": "NVIDIA H200",
+  "gpu_count": 8,
+  "disk": {
+    "/": {
+      "total": "30723257925632",
+      "used": "4654574387200"
+    }
+  },
+  "memory": {
+    "total": "2162800439296"
+  },
+  "cpu": {
+    "count": 64,
+    "countLogical": 128
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    },
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    },
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    },
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    },
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    },
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    },
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    },
+    {
+      "name": "NVIDIA H200",
+      "memoryTotal": "150754820096",
+      "cudaCores": 16896,
+      "architecture": "Hopper"
+    }
+  ],
+  "cudaVersion": "12.4"
+}
