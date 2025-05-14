@@ -1,3 +1,4 @@
 wandb/
 artifacts/
 data/
+gsm8k_dataset_prepared/

@@ -2,11 +2,6 @@ import wandb
 import weave
 from contextlib import nullcontext
 
-def get_wandb_run():
-    if wandb.run is None:
-        return None
-    return wandb.run
-
 def wandb_attributes():
     "Add the wandb metrics as weave attributes"
     if wandb.run is None:

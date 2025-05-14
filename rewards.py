@@ -3,10 +3,10 @@ import re
 import weave
 from math_verify import parse, verify, ExprExtractionConfig
 
-from utills import get_wandb_run, wandb_attributes
+from utils import wandb_attributes
 
 
-@weave.op # <- this the logging we care
+@weave.op
 def reward_one_correct(one_response, one_answer):
     pattern = r"\d+\.\d+|\d+/\d+|\d+"
     nums = re.findall(pattern, one_response)
@@ -20,7 +20,6 @@ def reward_one_correct(one_response, one_answer):
     except:
         return -1.0
 
-@weave.op
 def reward_correct(completions, answer, **kwargs):
     """Verify if the completions is mathematically correct"""
     responses = [completion[0]['content'] for completion in completions]
@@ -32,7 +31,7 @@ def reward_correct(completions, answer, **kwargs):
     return rewards
 
 
-@weave.op # <- this the logging we care
+@weave.op
 def reward_one_format(one_response):
     pattern = r"^<think>.*?</think>[\n ]*<answer>.*?</answer>$"
     think_count = one_response.count("<think>") + one_response.count("</think>")
@@ -46,7 +45,6 @@ def reward_one_format(one_response):
     )
 
 
-@weave.op
 def reward_format(completions, **kwargs):
     """Verify if the completions follow the required format"""
     responses = [completion[0]['content'] for completion in completions]
