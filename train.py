@@ -42,7 +42,7 @@ def main(script_args, training_args):
             project=script_args.wandb_project, 
             entity=script_args.wandb_entity)
 
-        weave.init(script_args.wandb_project)
+        weave.init(f"{script_args.wandb_entity}/{script_args.wandb_project}")
 
     # Trainer
     trainer = GRPOTrainer(
