@@ -1,0 +1,36 @@
+
+import re
+from sympy import parse, verify, ExprExtractionConfig
+
+def reward_correct(completions, answer, **kwargs):
+    """Verify if the completions is mathematically correct"""
+    responses = [completion[0]['content'] for completion in completions]
+    def _reward_correct(one_response, one_answer):
+        pattern = r"\d+\.\d+|\d+/\d+|\d+"
+        nums = re.findall(pattern, one_response)
+        if len(nums) == 0:
+            return -1.0
+        lastnum = nums[-1]
+        try:
+            ans = parse(lastnum, extraction_config=[ExprExtractionConfig()])
+            ground_truth = parse(one_answer, extraction_config=[ExprExtractionConfig()])
+            return 1.0 if verify(ans, ground_truth) else -1.0
+        except:
+            return -1.0
+    return [_reward_correct(response, answer) for response, answer in zip(responses, answer)]
+
+def reward_format(completions, **kwargs):
+    """Verify if the completions follow the required format"""
+    responses = [completion[0]['content'] for completion in completions]
+    def _reward_format(one_response):
+        pattern = r"^<think>.*?</think>[\n ]*<answer>.*?</answer>$"
+        think_count = one_response.count("<think>") + one_response.count("</think>")
+        answer_count = one_response.count("<answer>") + one_response.count("</answer>")
+        return (
+            1.25
+            if re.match(pattern, one_response, re.DOTALL | re.VERBOSE)
+            and think_count == 2
+            and answer_count == 2
+            else -1.0
+        )
+    return [_reward_format(response) for response in responses]
