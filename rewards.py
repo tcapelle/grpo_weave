@@ -1,10 +1,15 @@
 
 import re
-from sympy import parse, verify, ExprExtractionConfig
+import weave
+from math_verify import parse, verify, ExprExtractionConfig
 
+from utills import get_wandb_run, wandb_attributes
+
+@weave.op
 def reward_correct(completions, answer, **kwargs):
     """Verify if the completions is mathematically correct"""
     responses = [completion[0]['content'] for completion in completions]
+    @weave.op # <- this the logging we care
     def _reward_correct(one_response, one_answer):
         pattern = r"\d+\.\d+|\d+/\d+|\d+"
         nums = re.findall(pattern, one_response)
@@ -17,11 +22,14 @@ def reward_correct(completions, answer, **kwargs):
             return 1.0 if verify(ans, ground_truth) else -1.0
         except:
             return -1.0
-    return [_reward_correct(response, answer) for response, answer in zip(responses, answer)]
+    with wandb_attributes():
+        return [_reward_correct(response, answer) for response, answer in zip(responses, answer)]
 
+@weave.op
 def reward_format(completions, **kwargs):
     """Verify if the completions follow the required format"""
     responses = [completion[0]['content'] for completion in completions]
+    @weave.op # <- this the logging we care
     def _reward_format(one_response):
         pattern = r"^<think>.*?</think>[\n ]*<answer>.*?</answer>$"
         think_count = one_response.count("<think>") + one_response.count("</think>")
@@ -33,4 +41,5 @@ def reward_format(completions, **kwargs):
             and answer_count == 2
             else -1.0
         )
-    return [_reward_format(response) for response in responses]
+    with wandb_attributes():
+        return [_reward_format(response) for response in responses]

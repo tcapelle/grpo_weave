@@ -1,54 +1,77 @@
-from transformers import AutoTokenizer
-from trl import GRPOConfig, GRPOTrainer
-import re
-import wandb
-from math_verify import parse, verify, ExprExtractionConfig
-from datasets import load_dataset, Dataset
+import trl
+from accelerate import Accelerator
+from datasets import load_from_disk
+from transformers import set_seed, AutoTokenizer, AutoModelForCausalLM
+from trl import GRPOConfig, TrlParser
+
+import simple_parsing as sp
+
+from config import GRPOScriptArguments
+from rewards import reward_correct, reward_format
+
+def main(script_args, training_args):
+    # Set seed for reproducibility
+    set_seed(training_args.seed)
+
+    # create an explicit accelerator
+    accelerator = Accelerator()
+
+    # Load the dataset
+    dataset = load_from_disk(script_args.dataset_name)
+
+    # Load tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(script_args.model_name)
+
+    # Load model
+    model = AutoModelForCausalLM.from_pretrained(
+        script_args.model_name,
+        torch_dtype=torch.bfloat16,
+        attn_implementation="flash_attention_2"
+    )
+    # pass our reward functions
+    reward_funcs = [reward_correct, reward_format]
+
+    if accelerator.is_main_process:
+        wandb.init(
+            project=script_args.wandb_project, 
+            entity=script_args.wandb_entity)
+
+        weave.init(script_args.wandb_project)
+
+    # Trainer
+    trainer = GRPOTrainer(
+        model=model,
+        reward_funcs=reward_funcs,
+        args=training_args,
+        train_dataset=dataset[script_args.dataset_train_split],
+        processing_class=tokenizer,
+    )
+    train_result = trainer.train()
+
+    ##################################
+    logger.info("*** Save model ***")
+    trainer.save_model(training_args.output_dir)
+    logger.info(f"Model saved to {training_args.output_dir}")
+
+    # Save everything else on main process
+    kwargs = {
+        "dataset_name": script_args.dataset_name,
+        "tags": ["grpo_weave"],
+    }
+    if trainer.accelerator.is_main_process:
+        trainer.create_model_card(**kwargs)
+        # Restore k,v cache for fast inference
+        trainer.model.config.use_cache = True
+        trainer.model.config.save_pretrained(training_args.output_dir)
 
 
-model = "Qwen/Qwen3-4B"
-tokenizer = AutoTokenizer.from_pretrained(model)
+    # push to hub
+    if training_args.push_to_hub:
+        logger.info("Pushing to hub...")
+        trainer.push_to_hub(**kwargs)
 
 
-
-training_args = GRPOConfig(
-    use_vllm = True,
-    model_init_kwargs = {
-        "torch_dtype": torch.bfloat16,
-        "attn_implementation": "flash_attention_2",
-        "device_map": "cuda:0",
-    },
-    learning_rate = 5e-6,
-    adam_beta1 = 0.9,
-    adam_beta2 = 0.99,
-    weight_decay = 0.1,
-    warmup_ratio = 0.1,
-    beta=0.0,
-    lr_scheduler_type = "cosine",
-    optim = "adamw_8bit",
-    logging_steps = 1,
-    bf16 = True,
-    per_device_train_batch_size = 8,
-    gradient_accumulation_steps = 2, # Increase to 4 for smoother training
-    num_generations = 8, # Decrease if out of memory
-    max_prompt_length = 256,
-    max_completion_length = 200,
-    # num_train_epochs = 1, # Set to 1 for a full training run
-    max_steps = 250,
-    save_steps = 250,
-    max_grad_norm = 0.1,
-    log_completions = True,
-    report_to = "wandb", # Can use Weights & Biases
-    output_dir = "grpo_trl_output",
-)
-
-wandb.init(project="grpo-trl", config=training_args)
-
-trainer = GRPOTrainer(
-    model = model,
-    processing_class = tokenizer,
-    reward_funcs = [reward_correct, reward_format],
-    args = training_args,
-    train_dataset = dataset,
-)
-trainer.train()
+if __name__ == "__main__":
+    parser = TrlParser((GRPOScriptArguments, GRPOConfig))
+    script_args, training_args = parser.parse_args_and_config()
+    main(script_args, training_args)
