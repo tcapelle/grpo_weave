@@ -1,5 +1,13 @@
 # grpo_weave
 
+## Setup
+
+```
+uv sync --no-install-package flash-attn
+
+# then
+uv sync
+```
 
 ## vLLM server
 
