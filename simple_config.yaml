@@ -4,6 +4,7 @@ dataset_name: gsm8k_dataset_prepared
 wandb_project: grpo_weave2
 wandb_entity: grpo-cuda
 wandb_run_name: Qwen3-4B-Simple-RL
+
 # GRPO trainer config
 bf16: true
 use_vllm: true
@@ -40,3 +41,4 @@ report_to:
 save_strategy: "no"
 seed: 42
 warmup_ratio: 0.1
+beta: 0.0 # disable KL penalty
