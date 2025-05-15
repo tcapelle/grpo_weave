@@ -1,12 +1,12 @@
 # Script arguments
 model_name: Qwen/Qwen3-4B
 dataset_name: gsm8k_dataset_prepared
-wandb_project: grpo_weave
+wandb_project: grpo_weave2
 wandb_entity: grpo-cuda
-
+wandb_run_name: Qwen3-4B-Simple-RL
 # GRPO trainer config
 bf16: true
-use_vllm: true
+use_vllm: false
 gradient_accumulation_steps: 2
 gradient_checkpointing: true
 gradient_checkpointing_kwargs:
