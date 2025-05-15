@@ -7,7 +7,16 @@ requires-python = ">=3.10"
 dependencies = [
     "accelerate>=1.6.0",
     "datasets>=3.5.0",
+    "math-verify>=0.7.0",
     "simple-parsing>=0.1.7",
+    "flash-attn>=2.0",
     "sympy>=1.13.1",
-    "trl>=0.17.0.dev0",
+    "torch>=2.6.0",
+    "trl>=0.17.0",
+    "vllm>=0.8.4",
+    "wandb>=0.19.9",
+    "weave>=0.51.42",
 ]
+
+[tool.uv]
+no-build-isolation-package = ['flash-attn']
