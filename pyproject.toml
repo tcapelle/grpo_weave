@@ -12,8 +12,7 @@ dependencies = [
     "flash-attn>=2.0",
     "sympy>=1.13.1",
     "torch>=2.6.0",
-    "trl>=0.17.0",
-    "vllm>=0.8.4",
+    "trl[vllm]<0.17.0",
     "wandb>=0.19.9",
     "weave>=0.51.42",
 ]
