@@ -40,7 +40,9 @@ def main(script_args, training_args):
     if accelerator.is_main_process:
         wandb.init(
             project=script_args.wandb_project, 
-            entity=script_args.wandb_entity)
+            entity=script_args.wandb_entity,
+            name=script_args.wandb_run_name,
+            )
 
         weave.init(f"{script_args.wandb_entity}/{script_args.wandb_project}")
 
